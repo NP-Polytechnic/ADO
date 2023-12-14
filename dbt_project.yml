@@ -39,3 +39,6 @@ models:
       +materialized: view
     reporting:
       +materialized: table
+    incremental_orders:
+      +materialized: incremental
+      unique_key: ORDERID
