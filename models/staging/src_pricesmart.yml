@@ -16,4 +16,17 @@ sources:
               - unique
               - not_null
       - name: PRODUCT
- 
+        description: product table
+        columns:
+          - name: productid
+            description: primary key for product
+      - name: FRESH_ORDERS
+        description: fresh orders to be appended into ORDERS table
+        columns:
+          - name: ORDERID
+            description: primary key for FRESH_ORDERS
+      - name: incremental_orders
+        description: incremental orders to append to orders
+        columns:
+          - name: ORDERID
+            description: primary key for incremental_orders
