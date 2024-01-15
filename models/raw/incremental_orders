@@ -1,0 +1,55 @@
+-- models/incremental_orders.sql
+
+{{ config(
+    materialized='incremental',
+    unique_key='OrderID'
+) }}
+
+with source_data as (
+    select
+        OrderID,
+        OrderDate,
+        ShipDate,
+        ShipMode,
+        CustomerID,
+        ProductID,
+        OrderCostPrice,
+        OrderSellingPrice
+    from
+        {{ ref('FRESH_ORDERS') }}
+)
+
+merge into {{ ref('ORDERS') }} as target
+using source_data
+on target.OrderID = source_data.OrderID
+
+when matched then
+  update set
+    OrderDate = source_data.OrderDate,
+    ShipDate = source_data.ShipDate,
+    ShipMode = source_data.ShipMode,
+    CustomerID = source_data.CustomerID,
+    ProductID = source_data.ProductID,
+    OrderCostPrice = source_data.OrderCostPrice,
+    OrderSellingPrice = source_data.OrderSellingPrice
+
+when not matched then
+  insert (
+    OrderID,
+    OrderDate,
+    ShipDate,
+    ShipMode,
+    CustomerID,
+    ProductID,
+    OrderCostPrice,
+    OrderSellingPrice
+  ) values (
+    source_data.OrderID,
+    source_data.OrderDate,
+    source_data.ShipDate,
+    source_data.ShipMode,
+    source_data.CustomerID,
+    source_data.ProductID,
+    source_data.OrderCostPrice,
+    source_data.OrderSellingPrice
+  );
